@@ -39,11 +39,10 @@ If you want to learn the latest [Linux Kernel](http://www.kernel.org), please tr
 
 - Features
     - compilable with many different versions of Gcc.
-    - has been tested under modern Linux, Mac OS X and even work on Windows with Docker Toolbox.
+    - has been tested under modern Linux, Mac OS X and even work on Windows (with docker support).
     - add bulit-in qemu and bochs support, include running and debugging.
     - integrate different prebuilt rootfs (floopy, ramdisk and harddisk).
     - allow to generate callgraph of every specified function
-    - a Dockerfile added to simplify this setup on other systems (e.g. Windows).
 
 ## Install the environment
 
@@ -175,6 +174,7 @@ A new demonstration is added: [Linux 0.11 Lab: Add a new syscall into Linux 0.11
     $ sync
 
   Host:
+
     $ make linux-0.00
 
 ### Building Linux 0.11 in Linux 0.11
@@ -190,6 +190,7 @@ A new demonstration is added: [Linux 0.11 Lab: Add a new syscall into Linux 0.11
     $ sync
 
   Host:
+
     $ make hd-boot
 
 ## Changes
