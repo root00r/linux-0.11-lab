@@ -15,18 +15,9 @@ If you want to learn the latest [Linux Kernel](http://www.kernel.org), please tr
 
 - [Introduction](#introduction)
 
-- [Build on Linux](#build-on-linux)
-    - [Linux Setup](#linux-setup)
-    - [Hack Linux 0.11 on Linux](#hack-linux-011-on-linux)
+- [Install the environment](#install-the-environment)
 
-- [Build on Mac OS X](#build-on-mac-os-x)
-    - [Mac OS X Setup](#mac-os-x-setup)
-    - [Hack Linux 0.11 on Mac](#hack-linux-011-on-mac)
-
-- [Build on Other Systems (Include Mac OS X, Windows)](#build-on-other-systems-include-mac-os-x-windows)
-    - [Setup with Docker Toolbox and Docker CE](#setup-with-docker-toolbox-and-docker-ce)
-    - [Hack Linux 0.11 on other systems](#hack-linux-011-on-other-systems)
-
+- [Hack Linux 0.11](#hack-linux-011)
 
 - [Hack Rootfs](#hack-rootfs)
     - [RAM image](#ram-image)
@@ -54,14 +45,15 @@ If you want to learn the latest [Linux Kernel](http://www.kernel.org), please tr
     - allow to generate callgraph of every specified function
     - a Dockerfile added to simplify this setup on other systems (e.g. Windows).
 
+## Install the environment
 
-## Build on Linux
+Linux 0.11 Lab works on Linux, Windows and Mac OSX, but please install docker at first, then simply install the environment with these three commands:
 
-### Linux Setup
+    $ git clone https://gitee.com/tinylab/cloud-lab.git
+    $ cd cloud-lab/
+    $ tools/docker/run linux-0.11-lab
 
-The [docker install method](#build-on-other-systems-include-mac-os-x-windows) is recommended for all systems, including Linux, Windows and Mac OS.
-
-Here is the deprecated method:
+Here is the deprecated method in Linux system:
 
 * The Linux distributions: debian and ubuntu (>= 14.04) are recommended
 * Install basic tools
@@ -73,7 +65,8 @@ Here is the deprecated method:
         $ sudo apt-get install bochs vgabios bochsbios bochs-doc bochs-x libltdl7 bochs-sdl bochs-term
         $ sudo apt-get install graphviz cflow
 
-### Hack Linux 0.11 on Linux
+
+## Hack Linux 0.11
 
 **Note** To enable kvm speedup for hardisk boot, please make sure cpu virtualization is enabled in bios features.
 
@@ -91,118 +84,6 @@ Here is the deprecated method:
     $ make debug-hd	// debug kernel.sym via qemu and start gdb automatically to connect it.
     $ make debug-hd DST=src/boot/bootsect.sym  // debug bootsect, can not debug code after ljmp
     $ make debug-hd DST=src/boot/setup.sym     // debug setup, can not debug after ljmp
-
-## Build on Mac OS X
-
-**Note**: A simpler method is using Docker Toolbox with our Dockerfile, see [Build on the other systems](#build-on-other-systems-include-mac-os-x-windows)
-
-### Mac OS X Setup
-
-* Install xcode from "App Store"
-* Install Mac package manage tool: MacPorts from http://www.macports.org/install.php
-
-    * Check your OS X version from "About This Mac", for example, Lion
-    * Go to the "Mac OS X Package (.pkg) Installer" part and download the corresponding version
-    * Self update MacPorts
-
-                $ xcode-select --switch /Applications/Xcode.app/Contents/Developer
-                $ sudo port -v selfupdate
-
-* Install cross compiler gcc and binutils
-
-        $ sudo port install i386-elf-binutils i386-elf-gcc
-
-* Install qemu
-
-        $ sudo port install qemu
-
-* Install graphviz and cflow
-
-        $ sudo port install GraphViz
-        $ sudo port install cflow
-
-* Install gdb. 'Cause port doesn't provide i386-elf-gdb, use the pre-compiled tools/mac/gdb.xz or download its source and compile it.
-
-        $ cd tools/mac/ ; tar Jxf gdb.xz
-
-Optional
-
-    $ sudo port install cscope
-    $ sudo port install ctags
-
-    $ wget ftp://ftp.gnu.org/gnu/gdb/gdb-7.4.tar.bz2
-    $ tar -xzvf gdb-7.4.tar.bz2
-    $ cd gdb-7.4
-    $ ./configure --target=i386-elf
-    $ make
-
-### Hack Linux 0.11 on Mac
-
-Same as [Hack Linux-0.11 on Linux](#hack-linux-011-on-linux)
-
-## Build on Other Systems (include Mac OS X, Windows)
-
-If want to use this Lab on the other systems, such as Windows (and even Mac OS
-X), with the Dockerfile support, everything is simplified.
-
-Only need to install the docker ce or docker toolbox, which is a lightweight Linux
-distribution made specifically to run Docker containers, with this tool and our
-Dockerfile, we can simply build a Linux 0.11 Lab on every system.
-
-### Setup with Docker Toolbox and Docker CE
-
-- Install Docker and boot into it
-
-    - Linux, Mac OSX, Windows 10: [Docker CE](https://store.docker.com/search?type=edition&offering=community)
-    - Older Windows: [Docker Toolbox Installation](https://www.docker.com/docker-toolbox)
-
-- Choose a working directory
-
-    For the `default` system on virtualbox installed by Docker Toolbox, please use `/mnt/sda1` instead of  the default `/root`, otherwise, data will be lost.
-
-        $ cd /mnt/sda1
-
-    For Linux and Mac OSX, please simply choose one directory under `~/Documents` or `~/Downloads`.
-
-        $ cd ~/Documents
-
-- Run and login the lab
-
-        $ git clone https://gitee.com/tinylab/cloud-lab.git
-        $ cd cloud-lab/ && tools/docker/choose linux-0.11-lab
-
-        $ tools/docker/run
-
-- The above command will start a VNC page, login with the password printed in the console
-
-
-Notes:
-
-In order to run docker without password, please make sure your user is added in the docker group:
-
-    $ sudo usermod -aG docker $USER
-
-In order to speedup docker images downloading, please configure a local docker mirror in `/etc/default/docker`, for example:
-
-    $ grep registry-mirror /etc/default/docker
-    DOCKER_OPTS="$DOCKER_OPTS --registry-mirror=https://docker.mirrors.ustc.edu.cn"
-    $ service docker restart
-
-In order to avoid network ip address conflict, please try following changes and restart docker:
-
-    $ grep bip /etc/default/docker
-    DOCKER_OPTS="$DOCKER_OPTS --bip=10.66.0.10/16"
-    $ service docker restart
-
-If the above changes not work, try something as following:
-
-    $ grep dockerd /lib/systemd/system/docker.service
-    ExecStart=/usr/bin/dockerd -H fd:// --bip=10.66.0.10/16 --registry-mirror=https://docker.mirrors.ustc.edu.cn
-    $ service docker restart
-
-### Hack Linux 0.11 on other systems
-
-Same as [Hack Linux-0.11 on Linux](#hack-linux-011-on-linux)
 
 ## Hack Rootfs
 
